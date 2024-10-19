@@ -31,7 +31,7 @@ export const commandMap: Record<KCommand, VSCommand> = {
   },
 };
 
-const kubectlTerminal = vscode.window.createTerminal("kube-flow");
+let kubectlTerminal: vscode.Terminal | undefined;
 
 export async function runKubectlCommandOnResource(
   command: string,
@@ -40,6 +40,10 @@ export async function runKubectlCommandOnResource(
   try {
     const tempFilePath = path.join(os.tmpdir(), "temp-kubectl-resource.yaml");
     fs.writeFileSync(tempFilePath, yaml);
+
+    if (!kubectlTerminal) {
+      kubectlTerminal = vscode.window.createTerminal("kubectl");
+    }
 
     kubectlTerminal.show();
     kubectlTerminal.sendText("clear");
